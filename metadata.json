@@ -1,0 +1,7 @@
+{
+  "name": "LAMUKA",
+  "description": "Collectif de lutte contre les VBG et pour l'inclusion des femmes handicapées au Congo Brazzaville.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
