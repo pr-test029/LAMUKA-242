@@ -26,9 +26,11 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans text-slate-900 bg-white">
       <Header currentPage={currentPage} onNavigate={setCurrentPage} />
+      
       <main className="flex-grow">
         {renderPage()}
       </main>
+      
       {currentPage !== 'assistant' && <Footer onNavigate={setCurrentPage} />}
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook } from 'lucide-react';
 
 export const Contact: React.FC = () => {
   return (
@@ -12,7 +12,7 @@ export const Contact: React.FC = () => {
           <div className="space-y-8">
             <h2 className="text-2xl font-semibold text-gray-800">Nos Coordonnées</h2>
             <p className="text-gray-600">
-              Vous avez besoin d'aide ou vous souhaitez rejoindre notre cause ? N'hésitez pas à nous contacter.
+              Siège : Mfilou-NGAMABA, Brazzaville.
             </p>
             
             <div className="space-y-6">
@@ -22,7 +22,8 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Adresse</h4>
-                  <p className="text-gray-600">20 rue Kimpouanza, Avenue Mayama, Mfilou, Brazzaville</p>
+                  <p className="text-gray-600">20, rue KIPOUANDZA, Mfilou-NGAMABA</p>
+                  <p className="text-gray-600">Brazzaville, Congo</p>
                 </div>
               </div>
               
@@ -31,8 +32,9 @@ export const Contact: React.FC = () => {
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900">Téléphone</h4>
-                  <p className="text-gray-600">+242 06 123 4567</p>
+                  <h4 className="font-bold text-gray-900">Téléphone (WhatsApp)</h4>
+                  <p className="text-gray-600">00242 06 920 60 58</p>
+                  <p className="text-gray-600">00242 06 852 65 55</p>
                 </div>
               </div>
 
@@ -42,22 +44,18 @@ export const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Email</h4>
-                  <p className="text-gray-600">contact@lamuka-congo.org</p>
+                  <p className="text-gray-600">lamuka2023@gmail.com</p>
+                  <p className="text-gray-600">louzologustavine@gmail.com</p>
                 </div>
               </div>
             </div>
 
             <div className="pt-8">
-              <h4 className="font-bold text-gray-900 mb-4">Suivez-nous</h4>
+              <h4 className="font-bold text-gray-900 mb-4">Réseaux Sociaux</h4>
               <div className="flex space-x-4">
-                <a href="#" className="bg-gray-100 p-3 rounded-full text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
+                <a href="https://facebook.com" target="_blank" rel="noreferrer" className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-full text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
                   <Facebook className="w-5 h-5" />
-                </a>
-                <a href="#" className="bg-gray-100 p-3 rounded-full text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a href="#" className="bg-gray-100 p-3 rounded-full text-gray-600 hover:bg-pink-600 hover:text-white transition-colors">
-                  <Instagram className="w-5 h-5" />
+                  <span>Lamuka242</span>
                 </a>
               </div>
             </div>
@@ -78,10 +76,9 @@ export const Contact: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Sujet</label>
                 <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none">
+                  <option>Renseignement</option>
                   <option>Demande d'aide</option>
-                  <option>Devenir bénévole</option>
                   <option>Partenariat</option>
-                  <option>Autre</option>
                 </select>
               </div>
               <div>
@@ -106,7 +103,7 @@ export const Contact: React.FC = () => {
               scrolling="no" 
               marginHeight={0} 
               marginWidth={0} 
-              src="https://maps.google.com/maps?q=20+rue+Kimpouanza,+Avenue+Mayama,+Mfilou,+Brazzaville&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=20+rue+KIPOUANDZA,+Mfilou,+Brazzaville&t=&z=15&ie=UTF8&iwloc=&output=embed"
               title="Localisation LAMUKA"
             ></iframe>
           </div>

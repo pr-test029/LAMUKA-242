@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MapPin, Loader2, Navigation } from 'lucide-react';
+import { Send, MapPin, Loader2, Navigation, Bot } from 'lucide-react';
 import { sendMessageToGemini, ChatMessage } from '../services/gemini';
 
 export const Assistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'model', 
-      text: 'Bonjour. Je suis l\'assistant virtuel de LAMUKA. Je peux vous aider à trouver des centres de santé, des associations ou répondre à vos questions sur vos droits. Comment puis-je vous aider aujourd\'hui ?' 
+      text: 'Bonjour. Je suis l\'assistant de LAMUKA. Posez-moi vos questions sur nos actions, le blog ou pour trouver de l\'aide à proximité.' 
     }
   ]);
   const [input, setInput] = useState('');
@@ -66,15 +66,29 @@ export const Assistant: React.FC = () => {
     }
   };
 
-  // Helper to render Markdown-like links or maps data
+  // Helper to parse simple markdown bold syntax (**text**)
+  const formatText = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index} className="font-bold text-gray-900">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  // Helper to render content
   const renderContent = (msg: ChatMessage) => {
     return (
       <div className="space-y-4">
-        <p className="whitespace-pre-wrap">{msg.text}</p>
+        <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
+          {formatText(msg.text)}
+        </div>
         
         {/* Render Grounding Data */}
         {msg.grounding && msg.grounding.length > 0 && (
-          <div className="mt-4 grid gap-3 sm:grid-cols-1 md:grid-cols-2">
+          <div className="mt-4 pt-4 border-t border-gray-100 grid gap-3 sm:grid-cols-1 md:grid-cols-2">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider col-span-full mb-1">Sources & Lieux</h4>
             {msg.grounding.map((chunk: any, index: number) => {
               // Handle Web Source Chunks
               if (chunk.web?.uri && chunk.web?.title) {
@@ -86,7 +100,7 @@ export const Assistant: React.FC = () => {
                       rel="noopener noreferrer"
                       className="block p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition shadow-sm"
                     >
-                      <div className="font-semibold text-pink-700 truncate">{chunk.web.title}</div>
+                      <div className="font-semibold text-pink-700 truncate text-sm">{chunk.web.title}</div>
                       <div className="text-xs text-gray-500 truncate">{chunk.web.uri}</div>
                     </a>
                  )
@@ -105,8 +119,8 @@ export const Assistant: React.FC = () => {
                       <div className="flex items-start">
                         <MapPin className="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0 group-hover:scale-110 transition-transform" />
                         <div className="min-w-0">
-                          <div className="font-semibold text-pink-700 truncate">{chunk.maps.title}</div>
-                          <div className="text-xs text-gray-500 truncate">Google Maps</div>
+                          <div className="font-semibold text-pink-700 truncate text-sm">{chunk.maps.title}</div>
+                          <div className="text-xs text-gray-500 truncate">Ouvrir dans Maps</div>
                         </div>
                       </div>
                     </a>
@@ -123,42 +137,46 @@ export const Assistant: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-gray-50">
-      <div className="bg-pink-700 text-white p-4 shadow-md">
-        <div className="container mx-auto flex items-center justify-between">
+      <div className="bg-white border-b border-gray-200 p-4 shadow-sm z-10">
+        <div className="container mx-auto flex items-center justify-between max-w-4xl">
           <div className="flex items-center">
-             <div className="bg-white/20 p-2 rounded-full mr-3">
-               <Navigation className="h-5 w-5 text-white" />
+             <div className="bg-pink-100 p-2 rounded-full mr-3">
+               <Bot className="h-6 w-6 text-pink-600" />
              </div>
              <div>
-               <h2 className="text-lg font-bold">LAMUKA Assistant</h2>
-               <p className="text-xs text-pink-200">
-                  {location ? "Localisation active • " : "Localisation non détectée • "}
-                  Propulsé par Google Gemini & Maps
+               <h2 className="text-lg font-bold text-gray-900">Assistant LAMUKA</h2>
+               <p className="text-xs text-gray-500 flex items-center">
+                  <span className={`w-2 h-2 rounded-full mr-2 ${location ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                  {location ? "Localisation active" : "Localisation désactivée"}
                </p>
              </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 container mx-auto max-w-4xl">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 container mx-auto max-w-4xl scrollbar-hide">
         {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
             <div 
-              className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-5 py-4 shadow-sm ${
+              className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-6 py-4 shadow-sm ${
                 msg.role === 'user' 
                   ? 'bg-pink-600 text-white rounded-tr-none' 
                   : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
               }`}
             >
-              {renderContent(msg)}
+              {msg.role === 'user' ? (
+                <p className="whitespace-pre-wrap text-sm">{msg.text}</p>
+              ) : (
+                renderContent(msg)
+              )}
             </div>
           </div>
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex items-center space-x-2">
+            <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 flex items-center space-x-3">
               <Loader2 className="w-5 h-5 text-pink-600 animate-spin" />
-              <span className="text-sm text-gray-500">Recherche en cours...</span>
+              <span className="text-sm text-gray-500 font-medium">Rédaction de la réponse...</span>
             </div>
           </div>
         )}
@@ -173,20 +191,20 @@ export const Assistant: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Ex: Où trouver un gynécologue à Brazzaville ?"
-              className="w-full pl-4 pr-12 py-4 bg-gray-100 border-0 rounded-full focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all shadow-inner text-gray-800 placeholder-gray-500"
+              placeholder="Ex: Quels sont vos services juridiques ?"
+              className="w-full pl-6 pr-14 py-4 bg-gray-100 border-0 rounded-full focus:ring-2 focus:ring-pink-500 focus:bg-white transition-all text-gray-800 placeholder-gray-500 shadow-inner"
               disabled={isLoading}
             />
             <button
               onClick={handleSend}
               disabled={isLoading || !input.trim()}
-              className="absolute right-2 p-2 bg-pink-600 text-white rounded-full hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+              className="absolute right-2 p-2.5 bg-pink-600 text-white rounded-full hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:scale-105 active:scale-95"
             >
               <Send className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-center text-xs text-gray-400 mt-2">
-            L'assistant peut faire des erreurs. Vérifiez les informations importantes.
+          <p className="text-center text-[10px] text-gray-400 mt-3 uppercase tracking-wider">
+            L'assistant utilise l'IA et peut faire des erreurs.
           </p>
         </div>
       </div>
