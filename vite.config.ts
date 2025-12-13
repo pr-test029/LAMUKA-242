@@ -14,9 +14,9 @@ export default defineConfig(({ mode }) => {
       sourcemap: true
     },
     // Cette section remplace process.env.API_KEY par la valeur réelle lors du build
+    // Utilisation de || '' pour éviter que JSON.stringify(undefined) ne cause des soucis
     define: {
-      'process.env.API_KEY': JSON.stringify(env.API_KEY),
-      // Empêche le crash si d'autres process.env sont accédés
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || ''),
       'process.env': {} 
     }
   };

@@ -1,6 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Récupération de la clé injectée par Vite
+const apiKey = process.env.API_KEY;
+
+// Initialisation conditionnelle pour éviter le crash "An API Key must be set" au chargement de la page
+// Si la clé est absente, ai reste null et l'erreur sera gérée lors de l'appel de la fonction
+let ai: GoogleGenAI | null = null;
+if (apiKey) {
+  try {
+    ai = new GoogleGenAI({ apiKey });
+  } catch (error) {
+    console.error("Erreur d'initialisation Gemini:", error);
+  }
+}
 
 const modelId = "gemini-2.5-flash";
 
@@ -15,6 +27,14 @@ export const sendMessageToGemini = async (
   location?: { latitude: number; longitude: number }
 ): Promise<{ text: string; grounding?: any }> => {
   try {
+    // Vérification avant l'appel
+    if (!ai) {
+      console.warn("Gemini AI n'est pas initialisé (Clé API manquante ou invalide).");
+      return { 
+        text: "Le service d'assistant est actuellement indisponible. Veuillez vérifier la configuration de la clé API ou contacter l'administrateur." 
+      };
+    }
+
     const tools = [{ googleMaps: {} }];
     
     // Construct tool config with location if available
@@ -75,6 +95,6 @@ export const sendMessageToGemini = async (
     return { text, grounding };
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return { text: "Désolé, une erreur est survenue lors de la connexion à l'assistant. Veuillez réessayer plus tard." };
+    return { text: "Désolé, une erreur technique est survenue. Veuillez réessayer plus tard." };
   }
 };
