@@ -5,7 +5,6 @@ import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Services } from './pages/Services';
 import { Contact } from './pages/Contact';
-import { Assistant } from './pages/Assistant';
 import { Blog } from './pages/Blog';
 
 const App: React.FC = () => {
@@ -18,7 +17,6 @@ const App: React.FC = () => {
       case 'services': return <Services />;
       case 'blog': return <Blog />;
       case 'contact': return <Contact />;
-      case 'assistant': return <Assistant />;
       default: return <Home onNavigate={setCurrentPage} />;
     }
   };
@@ -31,7 +29,7 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
       
-      {currentPage !== 'assistant' && <Footer onNavigate={setCurrentPage} />}
+      <Footer onNavigate={setCurrentPage} />
     </div>
   );
 };

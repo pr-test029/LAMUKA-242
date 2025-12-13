@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Heart, MapPin } from 'lucide-react';
+import { Menu, X, Heart } from 'lucide-react';
 
 interface HeaderProps {
   currentPage: string;
@@ -14,7 +14,6 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
     { id: 'about', label: 'À Propos' },
     { id: 'services', label: 'Nos Actions' },
     { id: 'blog', label: 'Blog' },
-    { id: 'assistant', label: 'Trouver de l\'Aide', icon: MapPin },
     { id: 'contact', label: 'Contact' },
   ];
 
@@ -50,7 +49,6 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                     : 'text-gray-500 hover:text-pink-600'
                 }`}
               >
-                {item.icon && <item.icon className="w-4 h-4 mr-1" />}
                 {item.label}
               </button>
             ))}
@@ -83,7 +81,6 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
                 }`}
               >
                 <div className="flex items-center">
-                   {item.icon && <item.icon className="w-4 h-4 mr-2" />}
                    {item.label}
                 </div>
               </button>

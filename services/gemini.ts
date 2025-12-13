@@ -1,96 +1,52 @@
 import { GoogleGenAI } from "@google/genai";
 
-// On ne fait rien au niveau global pour éviter le crash au chargement de la page
-// L'initialisation se fera uniquement à l'intérieur de la fonction
-
-const modelId = "gemini-2.5-flash";
-
 export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
-  grounding?: any;
+  grounding?: any[];
 }
 
 export const sendMessageToGemini = async (
   message: string,
   location?: { latitude: number; longitude: number }
-): Promise<{ text: string; grounding?: any }> => {
+) => {
   try {
-    // 1. Récupération sécurisée de la clé
-    const apiKey = process.env.API_KEY;
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
+    const tools: any[] = [{ googleSearch: {} }];
+    let toolConfig: any = undefined;
 
-    // 2. Vérification immédiate
-    if (!apiKey) {
-      console.warn("Clé API manquante lors de la tentative d'envoi.");
-      return { 
-        text: "Le service d'assistant n'est pas configuré (Clé API manquante). Veuillez contacter l'administrateur du site." 
+    if (location) {
+      tools.push({ googleMaps: {} });
+      toolConfig = {
+        retrievalConfig: {
+          latLng: {
+            latitude: location.latitude,
+            longitude: location.longitude
+          }
+        }
       };
     }
 
-    // 3. Initialisation "Lazy" (uniquement quand on en a besoin)
-    // Cela empêche le site de planter au démarrage
-    const ai = new GoogleGenAI({ apiKey });
-
-    const tools = [{ googleMaps: {} }];
-    
-    // Construct tool config with location if available
-    const toolConfig = location ? {
-      retrievalConfig: {
-        latLng: {
-          latitude: location.latitude,
-          longitude: location.longitude
-        }
-      }
-    } : undefined;
-
-    const systemInstruction = `Vous êtes l'assistant virtuel de LAMUKA, un collectif engagé au Congo Brazzaville.
-    
-    BASE DE CONNAISSANCES OFFICIELLE (SOURCE DOCUMENT PDF) :
-    
-    1. IDENTITÉ & VISION
-       - Nom : COLLECTIF LAMUKA.
-       - Devise : Solidarité – Justice - Développement.
-       - Vision : Promouvoir l’autonomisation de la jeune fille et femme en situation d’handicap.
-       - Mission : Contribuer à la promotion des droits de la jeune fille et femme en situation de handicap pour une société d’égalité et d’équité.
-    
-    2. COORDONNÉES
-       - Siège : 20, rue KIPOUANDZA, Mfilou-NGAMABA, Brazzaville.
-       - Téléphones (WhatsApp) : +242 06 920 60 58 / +242 06 852 65 55.
-       - Emails : lamuka2023@gmail.com / louzologustavine@gmail.com.
-       - Facebook : Lamuka242.
-    
-    3. DOMAINES D'ACTIVITÉS
-       - Formation entrepreneuriale : Pour l'autonomisation économique.
-       - Lutte contre les violences basées sur le genre (VBG) : Protection et justice.
-       - Droit en santé sexuelle et santé de la reproduction : Accès aux soins et information.
-    
-    RÈGLES DE RÉPONSE :
-    1. STYLE : Réponses COURTES, PRÉCISES et DIRECTES.
-    2. STRUCTURE : Utilisez des listes à puces.
-    3. MISE EN FORME : Mettez les mots-clés importants (noms, lieux, numéros) en **GRAS**.
-    4. MAPS : Si l'utilisateur cherche un lieu, utilisez l'outil googleMaps.
-    5. URGENCE : Pour les cas graves, renvoyez vers les numéros du siège (+242 06 920 60 58).
-    `;
-
     const response = await ai.models.generateContent({
-      model: modelId,
+      model: 'gemini-2.5-flash',
       contents: message,
       config: {
-        tools,
-        toolConfig,
-        systemInstruction,
-        temperature: 0.5,
+        tools: tools,
+        toolConfig: toolConfig,
+        systemInstruction: "Tu es l'assistant virtuel de LAMUKA. Tu aides les utilisateurs à s'informer sur les actions de l'ONG (justice, santé, entrepreneuriat) et à trouver de l'aide. Sois empathique et précis.",
       },
     });
 
-    const text = response.text || "Je suis désolé, je n'ai pas pu générer de réponse.";
-    
-    // Extract grounding chunks if available (Maps data)
-    const grounding = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-
-    return { text, grounding };
+    return {
+      text: response.text || "Désolé, je n'ai pas pu générer de réponse.",
+      grounding: response.candidates?.[0]?.groundingMetadata?.groundingChunks
+    };
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return { text: "Une erreur technique est survenue avec l'assistant. Veuillez réessayer plus tard." };
+    return {
+      text: "Désolé, une erreur est survenue. Veuillez vérifier votre connexion ou réessayer plus tard.",
+      grounding: []
+    };
   }
 };

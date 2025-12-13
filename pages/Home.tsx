@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Shield, HeartHandshake, Users, Mic2, ChevronRight, Play } from 'lucide-react';
+import { ArrowRight, Shield, HeartHandshake, Users, ChevronRight } from 'lucide-react';
 
 interface HomeProps {
   onNavigate: (page: string) => void;
@@ -64,7 +64,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
             <div className="flex flex-wrap gap-4 pt-4">
               <button 
-                onClick={() => onNavigate('assistant')}
+                onClick={() => onNavigate('contact')}
                 className="group px-8 py-4 bg-slate-900 text-white rounded-full font-bold shadow-xl hover:shadow-2xl hover:bg-slate-800 transition-all flex items-center hover:-translate-y-1"
               >
                 J'ai besoin d'aide
