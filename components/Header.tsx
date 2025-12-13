@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   currentPage: string;
@@ -28,12 +28,14 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div 
-            className="flex items-center cursor-pointer" 
+            className="flex items-center cursor-pointer group" 
             onClick={() => handleNav('home')}
           >
-            <div className="bg-pink-600 p-2 rounded-lg mr-2">
-              <Heart className="text-white h-6 w-6" fill="currentColor" />
-            </div>
+            <img 
+              src="/images/logo_lamuka_242.png" 
+              alt="Logo LAMUKA" 
+              className="h-12 w-auto mr-3 object-contain transition-transform group-hover:scale-105" 
+            />
             <span className="font-bold text-xl text-pink-900 tracking-tight">LAMUKA</span>
           </div>
 
