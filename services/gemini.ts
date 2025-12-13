@@ -1,18 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Récupération de la clé injectée par Vite
-const apiKey = process.env.API_KEY;
-
-// Initialisation conditionnelle pour éviter le crash "An API Key must be set" au chargement de la page
-// Si la clé est absente, ai reste null et l'erreur sera gérée lors de l'appel de la fonction
-let ai: GoogleGenAI | null = null;
-if (apiKey) {
-  try {
-    ai = new GoogleGenAI({ apiKey });
-  } catch (error) {
-    console.error("Erreur d'initialisation Gemini:", error);
-  }
-}
+// On ne fait rien au niveau global pour éviter le crash au chargement de la page
+// L'initialisation se fera uniquement à l'intérieur de la fonction
 
 const modelId = "gemini-2.5-flash";
 
@@ -27,13 +16,20 @@ export const sendMessageToGemini = async (
   location?: { latitude: number; longitude: number }
 ): Promise<{ text: string; grounding?: any }> => {
   try {
-    // Vérification avant l'appel
-    if (!ai) {
-      console.warn("Gemini AI n'est pas initialisé (Clé API manquante ou invalide).");
+    // 1. Récupération sécurisée de la clé
+    const apiKey = process.env.API_KEY;
+
+    // 2. Vérification immédiate
+    if (!apiKey) {
+      console.warn("Clé API manquante lors de la tentative d'envoi.");
       return { 
-        text: "Le service d'assistant est actuellement indisponible. Veuillez vérifier la configuration de la clé API ou contacter l'administrateur." 
+        text: "Le service d'assistant n'est pas configuré (Clé API manquante). Veuillez contacter l'administrateur du site." 
       };
     }
+
+    // 3. Initialisation "Lazy" (uniquement quand on en a besoin)
+    // Cela empêche le site de planter au démarrage
+    const ai = new GoogleGenAI({ apiKey });
 
     const tools = [{ googleMaps: {} }];
     
@@ -83,7 +79,7 @@ export const sendMessageToGemini = async (
         tools,
         toolConfig,
         systemInstruction,
-        temperature: 0.5, // Lower temperature for more factual/precise responses
+        temperature: 0.5,
       },
     });
 
@@ -95,6 +91,6 @@ export const sendMessageToGemini = async (
     return { text, grounding };
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return { text: "Désolé, une erreur technique est survenue. Veuillez réessayer plus tard." };
+    return { text: "Une erreur technique est survenue avec l'assistant. Veuillez réessayer plus tard." };
   }
 };
