@@ -1,4 +1,4 @@
-import { GoogleGenAI, Tool } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -15,7 +15,7 @@ export const sendMessageToGemini = async (
   location?: { latitude: number; longitude: number }
 ): Promise<{ text: string; grounding?: any }> => {
   try {
-    const tools: Tool[] = [{ googleMaps: {} }];
+    const tools = [{ googleMaps: {} }];
     
     // Construct tool config with location if available
     const toolConfig = location ? {
@@ -67,11 +67,10 @@ export const sendMessageToGemini = async (
       },
     });
 
-    const candidate = response.candidates?.[0];
-    const text = candidate?.content?.parts?.map(p => p.text).join('') || "Je suis désolé, je n'ai pas pu générer de réponse.";
+    const text = response.text || "Je suis désolé, je n'ai pas pu générer de réponse.";
     
     // Extract grounding chunks if available (Maps data)
-    const grounding = candidate?.groundingMetadata?.groundingChunks;
+    const grounding = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
 
     return { text, grounding };
   } catch (error) {
