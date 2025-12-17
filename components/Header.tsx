@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             onClick={() => handleNav('home')}
           >
             <img 
-              src="/images/logo_lamuka_242.png" 
+              src="https://pr-gallery029.netlify.app/Stock_images/logo_lamuka_242.png" 
               alt="Logo LAMUKA" 
               className="h-12 w-auto mr-3 object-contain transition-transform group-hover:scale-105" 
             />
